@@ -43,7 +43,7 @@ while True:
 		val = hx.get_weight(5)
 		if val < 0:
 			val = 0
-		message = "%s" % (val / 1000)
+		message = "%s" % val
 		client_sock.send(message)
 		print("sent [%s]" % message)
 
