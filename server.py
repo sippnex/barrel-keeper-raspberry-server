@@ -1,6 +1,7 @@
 from bluetooth import *
 import time
-import random
+import sys
+import RPi.GPIO as GPIO from hx711 import HX711
 
 server_sock=BluetoothSocket( RFCOMM )
 server_sock.bind(("", PORT_ANY))
@@ -9,6 +10,21 @@ server_sock.listen(1)
 port = server_sock.getsockname()[1]
 
 uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+
+
+def cleanAndExit():
+    print "Cleaning..."
+
+    GPIO.cleanup()
+
+    print "Bye!"
+    sys.exit()
+
+hx = HX711(5, 6)
+hx.set_reading_format("MSB", "MSB")
+hx.set_reference_unit(1)
+hx.reset()
+hx.tare()
 
 advertise_service( server_sock, "SampleServer",
                    service_id = uuid,
@@ -21,21 +37,14 @@ print("Waiting for connection on RFCOMM channel %d" % port)
 client_sock, client_info = server_sock.accept()
 print("Accepted connection from ", client_info)
 while True:
-	time.sleep(3)
-	message = "Weight: %s" % random.randint(12, 65)
+	time.sleep(1)
+    val = hx.get_weight(5)
+	message = "%s" % (val / 1000)
 	client_sock.send(message)
 	print("sent [%s]" % message)
 
-#try:
-#    while True:
-#        data = client_sock.recv(1024)
-#        if len(data) == 0: break
-#        print("received [%s]" % data)
-#except IOError:
-#    pass
-
 print("disconnected")
-
 client_sock.close()
 server_sock.close()
+cleanAndExit()
 print("all done")
