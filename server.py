@@ -20,7 +20,7 @@ def cleanAndExit():
     print "Bye!"
     sys.exit()
 
-hx = HX711(5, 6)
+hx = HX711(22, 11)
 hx.set_reading_format("MSB", "MSB")
 hx.set_reference_unit(1)
 hx.reset()
