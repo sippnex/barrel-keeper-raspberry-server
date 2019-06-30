@@ -70,12 +70,12 @@ def process_data( data ):
 
 while True:
 	try:
-        data = client_sock.recv(1024)
-        if len(data) == 0: break
-        print("received [%s]" % data)
-        process_data(data)
-    except (IOError, KeyboardInterrupt, SystemExit):
-            pass
+		data = client_sock.recv(1024)
+		if len(data) == 0: break
+		print("received [%s]" % data)
+		process_data(data)
+	except (IOError, KeyboardInterrupt, SystemExit):
+		pass
 
 print("disconnected")
 client_sock.close()
