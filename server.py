@@ -55,7 +55,6 @@ def client_connected(client_sock):
     while True:
 	    try:
 		    data = client_sock.recv(1024)
-		    if len(data) == 0: break
 		    print("received [%s]" % data)
 		    process_data(client_sock, data)
 	    except IOError:
@@ -77,8 +76,11 @@ advertise_service( server_sock, "SampleServer",
                    service_classes = [ uuid, SERIAL_PORT_CLASS ],
                    profiles = [ SERIAL_PORT_PROFILE ] 
                     )
-
-waiting_for_connection()
+while True:
+    try:
+        waiting_for_connection()
+    except (KeyboardInterrupt, SystemExit):
+        break
 
 server_sock.close()
 cleanAndExit()
