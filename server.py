@@ -41,6 +41,25 @@ def process_data( data ):
 	elif command == 'RESET_SCALE':
 		reset_scale()
 
+def waiting_for_connection():
+    print("Waiting for connection on RFCOMM channel %d" % port)
+    client_sock, client_info = server_sock.accept()
+    print("Accepted connection from ", client_info)
+    client_connected()
+
+def client_connected():
+    while True:
+	    try:
+		    data = client_sock.recv(1024)
+		    if len(data) == 0: break
+		    print("received [%s]" % data)
+		    process_data(data)
+	    except IOError:
+		    waiting_for_connection()
+	    except (KeyboardInterrupt, SystemExit):
+		    break
+
+
 hx = HX711(22, 11)
 hx.set_reading_format("MSB", "MSB")
 hx.set_reference_unit(20)
@@ -52,22 +71,8 @@ advertise_service( server_sock, "SampleServer",
                    service_classes = [ uuid, SERIAL_PORT_CLASS ],
                    profiles = [ SERIAL_PORT_PROFILE ] 
                     )
-                   
-print("Waiting for connection on RFCOMM channel %d" % port)
 
-client_sock, client_info = server_sock.accept()
-print("Accepted connection from ", client_info)
-
-while True:
-	try:
-		data = client_sock.recv(1024)
-		if len(data) == 0: break
-		print("received [%s]" % data)
-		process_data(data)
-	except IOError:
-		pass
-	except (KeyboardInterrupt, SystemExit):
-		break
+waiting_for_connection()
 
 print("disconnected")
 client_sock.close()
