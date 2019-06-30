@@ -34,13 +34,12 @@ def reset_scale():
     print("sent [%s]" % message)
 
 def process_data( data ):
-    data.split()
-    method = data[0]
-    command = data[1]
-    if command == 'GET_WEIGHT':
-        send_weight()
-    elif command == 'RESET_SCALE':
-        reset_scale()
+	method = data.split()[0]
+	command = data.split()[1]
+	if command == 'GET_WEIGHT':
+		send_weight()
+	elif command == 'RESET_SCALE':
+		reset_scale()
 
 hx = HX711(22, 11)
 hx.set_reading_format("MSB", "MSB")
@@ -65,7 +64,9 @@ while True:
 		if len(data) == 0: break
 		print("received [%s]" % data)
 		process_data(data)
-	except (IOError, KeyboardInterrupt, SystemExit):
+	except IOError:
+		pass
+	except (KeyboardInterrupt, SystemExit):
 		break
 
 print("disconnected")
