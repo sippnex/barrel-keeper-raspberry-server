@@ -18,23 +18,6 @@ def cleanAndExit():
     print "Bye!"
     sys.exit()
 
-hx = HX711(22, 11)
-hx.set_reading_format("MSB", "MSB")
-hx.set_reference_unit(20)
-hx.reset()
-hx.tare()
-
-advertise_service( server_sock, "SampleServer",
-                   service_id = uuid,
-                   service_classes = [ uuid, SERIAL_PORT_CLASS ],
-                   profiles = [ SERIAL_PORT_PROFILE ] 
-                    )
-                   
-print("Waiting for connection on RFCOMM channel %d" % port)
-
-client_sock, client_info = server_sock.accept()
-print("Accepted connection from ", client_info)
-
 def send_weight():
     val = hx.get_weight(5)
     if val < 0:
@@ -53,20 +36,33 @@ def reset_scale():
     return
 
 def process_data( data ):
-
     data.split()
     method = data[0]
     command = data[1]
-
     if(method != 'REQUEST'):
         return
-
     if command == 'GET_WEIGHT':
         send_weight()
     elif command == 'RESET_SCALE':
         reset_scale()
-
     return
+
+hx = HX711(22, 11)
+hx.set_reading_format("MSB", "MSB")
+hx.set_reference_unit(20)
+hx.reset()
+hx.tare()
+
+advertise_service( server_sock, "SampleServer",
+                   service_id = uuid,
+                   service_classes = [ uuid, SERIAL_PORT_CLASS ],
+                   profiles = [ SERIAL_PORT_PROFILE ] 
+                    )
+                   
+print("Waiting for connection on RFCOMM channel %d" % port)
+
+client_sock, client_info = server_sock.accept()
+print("Accepted connection from ", client_info)
 
 while True:
 	try:
