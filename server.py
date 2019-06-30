@@ -25,7 +25,6 @@ def send_weight():
     message = "RESPONSE GET_WEIGHT OK %s" % val
     client_sock.send(message)
     print("sent [%s]" % message)
-    return
 
 def reset_scale():
     hx.reset()
@@ -33,19 +32,15 @@ def reset_scale():
     message = "RESPONSE RESET_SCALE OK"
     client_sock.send(message)
     print("sent [%s]" % message)
-    return
 
 def process_data( data ):
     data.split()
     method = data[0]
     command = data[1]
-    if(method != 'REQUEST'):
-        return
     if command == 'GET_WEIGHT':
         send_weight()
     elif command == 'RESET_SCALE':
         reset_scale()
-    return
 
 hx = HX711(22, 11)
 hx.set_reading_format("MSB", "MSB")
@@ -71,7 +66,7 @@ while True:
 		print("received [%s]" % data)
 		process_data(data)
 	except (IOError, KeyboardInterrupt, SystemExit):
-		pass
+		break
 
 print("disconnected")
 client_sock.close()
