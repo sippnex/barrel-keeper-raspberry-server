@@ -45,9 +45,13 @@ def waiting_for_connection():
     print("Waiting for connection on RFCOMM channel %d" % port)
     client_sock, client_info = server_sock.accept()
     print("Accepted connection from ", client_info)
-    client_connected()
+    client_connected(client_sock)
 
-def client_connected():
+def disconnect(client_sock):
+    client_sock.close()
+    print("disconnected")
+
+def client_connected(client_sock):
     while True:
 	    try:
 		    data = client_sock.recv(1024)
@@ -55,9 +59,11 @@ def client_connected():
 		    print("received [%s]" % data)
 		    process_data(data)
 	    except IOError:
-		    waiting_for_connection()
+            disconnect(client_sock)
+		    waiting_for_connection(client_sock)
 	    except (KeyboardInterrupt, SystemExit):
-		    break
+		    disconnect(client_sock)
+            break
 
 
 hx = HX711(22, 11)
@@ -74,8 +80,6 @@ advertise_service( server_sock, "SampleServer",
 
 waiting_for_connection()
 
-print("disconnected")
-client_sock.close()
 server_sock.close()
 cleanAndExit()
 print("all done")
