@@ -18,7 +18,7 @@ def cleanAndExit():
     print "Bye!"
     sys.exit()
 
-def send_weight():
+def send_weight(client_sock):
     val = hx.get_weight(5)
     if val < 0:
         val = 0
@@ -26,20 +26,20 @@ def send_weight():
     client_sock.send(message)
     print("sent [%s]" % message)
 
-def reset_scale():
+def reset_scale(client_sock):
     hx.reset()
     hx.tare()
     message = "RESPONSE RESET_SCALE OK"
     client_sock.send(message)
     print("sent [%s]" % message)
 
-def process_data( data ):
+def process_data( client_sock, data ):
 	method = data.split()[0]
 	command = data.split()[1]
 	if command == 'GET_WEIGHT':
-		send_weight()
+		send_weight(client_sock)
 	elif command == 'RESET_SCALE':
-		reset_scale()
+		reset_scale(client_sock)
 
 def waiting_for_connection():
     print("Waiting for connection on RFCOMM channel %d" % port)
@@ -57,7 +57,7 @@ def client_connected(client_sock):
 		    data = client_sock.recv(1024)
 		    if len(data) == 0: break
 		    print("received [%s]" % data)
-		    process_data(data)
+		    process_data(client_sock, data)
 	    except IOError:
             disconnect(client_sock)
 		    waiting_for_connection(client_sock)
