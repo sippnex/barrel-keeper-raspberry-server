@@ -59,7 +59,7 @@ def client_connected(client_sock):
 		    print("received [%s]" % data)
 		    process_data(client_sock, data)
 	    except IOError:
-            disconnect(client_sock)
+            	    disconnect(client_sock)
 		    waiting_for_connection(client_sock)
 	    except (KeyboardInterrupt, SystemExit):
 		    disconnect(client_sock)
