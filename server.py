@@ -62,7 +62,7 @@ def client_connected(client_sock):
 		    waiting_for_connection(client_sock)
 	    except (KeyboardInterrupt, SystemExit):
 		    disconnect(client_sock)
-            break
+            	    break
 
 
 hx = HX711(22, 11)
